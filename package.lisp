@@ -5,9 +5,12 @@
 |#
 
 (defpackage #:org.shirakumo.flare.quaternion
-  (:use #:cl)
+  (:use #:cl #:org.shirakumo.flare.vector #:org.shirakumo.flare.matrix)
   (:import-from #:org.shirakumo.flare.vector
-                #:define-vecx-accessor #:define-ofun #:ensure-float #:*float-type*)
+                #:define-vecx-accessor #:define-ofun #:ensure-float #:*float-type*
+                #:ensure-float-param #:intern* #:defsetf* #:%vx3 #:%vy3 #:%vz3)
+  (:import-from #:org.shirakumo.flare.matrix
+                #:*eps* #:~= #:~/=)
   ;; ops.lisp
   (:export
    )
