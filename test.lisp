@@ -5,7 +5,11 @@
 |#
 
 (defpackage #:org.shirakumo.flare.quaternion.test
-  (:use #:cl #:parachute #:3d-vectors #:3d-matrices #:3d-quaternions))
+  (:use #:cl #:parachute
+        #:org.shirakumo.flare.vector
+        #:org.shirakumo.flare.matrix
+        #:org.shirakumo.flare.quaternion)
+  (:import-from #:org.shirakumo.flare.matrix #:~=))
 (in-package #:org.shirakumo.flare.quaternion.test)
 
 (define-test 3d-quaternions)
@@ -27,14 +31,25 @@
   (is = 3 (qz (quat 1 2 3 4)))
   (is = 4 (qw (quat 1 2 3 4))))
 
-(define-test comparators
-  :parent 3d-vectors
-  :depends-on (struct))
+(define-test misc
+  :parent 3d-quaternions
+  :depends-on (struct)
+  (is q= (quat) (quat))
+  (is q= (quat 1 2 3 4) (quat 1 2 3 4))
+  (isnt q= (quat 1 2 3 4) (quat 1 2 3 5))
+  (is q/= (quat 1 2 3 4) (quat 1 2 3 5))
+  (isnt q/= (quat) (quat))
+  (is q= (quat 1 2 3 4) (qsetf (quat) 1 2 3 4))
+  (is qequal (qfrom-angle +vx+ (+ PI)) (qfrom-angle +vx+ (- PI)))
+  (is v= +vy+ (qaxis (qfrom-angle +vy+ PI)))
+  (is ~= (coerce PI 'single-float) (qangle (qfrom-angle +vy+ PI)))
+  (is q= (qfrom-angle +vy+ PI) (qfrom-mat (qmat4 (qfrom-angle +vy+ PI))))
+  (is q= (qfrom-angle +vx+ (/ PI 2)) (qfrom-mat (qmat4 (qfrom-angle +vx+ (/ PI 2))))))
 
 (define-test arithmetic
-  :parent 3d-vectors
+  :parent 3d-quaternions
   :depends-on (comparators))
 
 (define-test math
-  :parent 3d-vectors
+  :parent 3d-quaternions
   :depends-on (arithmetic))
