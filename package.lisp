@@ -13,7 +13,39 @@
                 #:*eps* #:~= #:~/=)
   ;; ops.lisp
   (:export
-   )
+   #:qsetf
+   #:qfrom-angle
+   #:qtowards
+   #:qaxis
+   #:qangle
+   #:q=
+   #:q/=
+   #:qequal
+   #:q+
+   #:nq+
+   #:q-
+   #:nq-
+   #:q*
+   #:nq*
+   #:q/
+   #:nq/
+   #:q.
+   #:qlength2
+   #:qlength
+   #:qunit
+   #:nqunit
+   #:qconjugate
+   #:qinv
+   #:q*v
+   #:qmix
+   #:qnlerp
+   #:qexpt
+   #:nqexpt
+   #:qslerp
+   #:qlookat
+   #:qmat3
+   #:qmat4
+   #:qfrom-mat)
   ;; struct.lisp
   (:export
    #:quat
