@@ -15,14 +15,14 @@
               (%qw ,q) ,(ensure-float-param w env))
        ,q)))
 
-(defun qfrom-angle (axis angle)
-  (let ((s (sin (* 0.5 angle))))
+(define-ofun qfrom-angle (axis angle)
+  (let ((s (sin (* 0.5 (ensure-float angle)))))
     (quat (* s (vx3 axis))
           (* s (vy3 axis))
           (* s (vz3 axis))
           (cos (* 0.5 angle)))))
 
-(defun qtowards (from to)
+(define-ofun qtowards (from to)
   (let ((from (vunit from))
         (to (vunit to)))
     (cond ((v= from to)
@@ -42,11 +42,11 @@
                   (axis (vc from half)))
              (quat (vx3 axis) (vy3 axis) (vz3 axis) (v. from half)))))))
 
-(defun qaxis (quat)
-  (nvunit (vec (qx quat) (qy quat) (qz quat))))
+(define-ofun qaxis (quat)
+  (nvunit quat))
 
-(defun qangle (quat)
-  (* 2.0 (acos (qw quat))))
+(define-ofun qangle (quat)
+  (* 2.0 (the single-float (acos (qw quat)))))
 
 (defmacro %2quat-op (a b combination red &rest 2q-override)
   (let ((red (if (listp red) red (list red)))
@@ -223,25 +223,38 @@
     (nvunit (nq* world->object up->up))))
 
 (define-ofun qmat3 (quat)
-  (let ((r (q*v quat +vx+))
-        (u (q*v quat +vy+))
-        (f (q*v quat +vz+)))
-    (mat3 (list (vx r) (vy r) (vz r)
-                (vx u) (vy u) (vz u)
-                (vx f) (vy f) (vz f)))))
+  (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
+         (xx (* x x)) (xy (* x y)) (xz (* x z)) (xw (* x w))
+         (yy (* y y)) (yz (* y z)) (yw (* y w))
+         (zz (* z z)) (zw (* z w)))
+    (mat3 (list (- 1 (* 2 (+ yy zz))) (* 2 (- xy zw)) (* 2 (+ xz yw))
+                (* 2 (+ xy zw)) (- 1 (* 2 (+ xx zz))) (* 2 (- yz xw))
+                (* 2 (- xz yw)) (* 2 (+ yz xw)) (- 1 (* 2 (+ xx yy)))))))
 
 (define-ofun qmat4 (quat)
-  (let ((r (q*v quat +vx+))
-        (u (q*v quat +vy+))
-        (f (q*v quat +vz+)))
-    (mat4 (list (vx r) (vy r) (vz r) 0
-                (vx u) (vy u) (vz u) 0
-                (vx f) (vy f) (vz f) 0
-                0      0      0      1))))
+  (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
+         (xx (* x x)) (xy (* x y)) (xz (* x z)) (xw (* x w))
+         (yy (* y y)) (yz (* y z)) (yw (* y w))
+         (zz (* z z)) (zw (* z w)))
+    (mat4 (list (- 1 (* 2 (+ yy zz))) (* 2 (- xy zw)) (* 2 (+ xz yw)) 0.0
+                (* 2 (+ xy zw)) (- 1 (* 2 (+ xx zz))) (* 2 (- yz xw)) 0.0
+                (* 2 (- xz yw)) (* 2 (+ yz xw)) (- 1 (* 2 (+ xx yy))) 0.0
+                0.0             0.0             0.0                   1.0))))
 
-(define-ofun qfrom-mat (mat4)
-  (let* ((u (nvunit (vec (mcref4 mat4 1 0) (mcref4 mat4 1 1) (mcref4 mat4 1 2))))
-         (f (nvunit (vec (mcref4 mat4 2 0) (mcref4 mat4 2 1) (mcref4 mat4 2 2))))
-         (r (vc u f))
-         (u (vc f r)))
-    (qlookat f u)))
+(defun qfrom-mat (mat)
+  (macrolet ((stub ()
+               `(let ((w (* 0.5 (sqrt (max 0.0 (+ 1.0 (+ (m 0 0)) (+ (m 1 1)) (+ (m 2 2)))))))
+                      (x (* 0.5 (sqrt (max 0.0 (+ 1.0 (+ (m 0 0)) (- (m 1 1)) (- (m 2 2)))))))
+                      (y (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (+ (m 1 1)) (- (m 2 2)))))))
+                      (z (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (- (m 1 1)) (+ (m 2 2))))))))
+                  (quat (float-sign (- (m 2 1) (m 1 2)) x)
+                        (float-sign (- (m 0 2) (m 2 0)) y)
+                        (float-sign (- (m 1 0) (m 0 1)) z)
+                        w))))
+    (etypecase mat
+      (mat3
+       (with-fast-matref (m mat 3)
+         (stub)))
+      (mat4
+       (with-fast-matref (m mat 4)
+         (stub))))))
