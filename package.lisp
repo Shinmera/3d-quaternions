@@ -13,6 +13,7 @@
                 #:*eps* #:~= #:~/=)
   ;; ops.lisp
   (:export
+   #:dqsetf
    #:qsetf
    #:qfrom-angle
    #:qtowards
@@ -58,7 +59,5 @@
    #:dquat
    #:dqcopy
    #:dquat-p
-   #:dx
-   #:dy
-   #:dz
-   #:dw))
+   #:qreal
+   #:qdual))
