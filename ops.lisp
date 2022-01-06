@@ -43,7 +43,7 @@
              (quat (vx3 axis) (vy3 axis) (vz3 axis) (v. from half)))))))
 
 (define-ofun qaxis (quat)
-  (nvunit quat))
+  (vunit quat))
 
 (define-ofun qangle (quat)
   (* 2.0 (the single-float (acos (qw quat)))))
