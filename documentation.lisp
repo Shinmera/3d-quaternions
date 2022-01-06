@@ -8,6 +8,13 @@
 
 ;; ops.lisp
 (docs:define-docs
+  (function dqsetf
+    "Update the fields of a dual-quaternion.
+
+Returns the modified dual-quaternion.
+
+See DQUAT")
+  
   (function qsetf
     "Update the fields of a quaternion.
 
@@ -47,6 +54,7 @@ See QUAT")
 
 This does not test for element-wise float exact equality,
 and instead compares accounting for a minimal epsilon of difference.
+If passed a dual-quaternion, both the real and dual are tested.
 
 See QUAT")
   
@@ -55,6 +63,7 @@ See QUAT")
 
 This does not test for element-wise float exact equality,
 and instead compares accounting for a minimal epsilon of difference.
+If passed a dual-quaternion, both the real and dual are tested.
 
 See QUAT")
   
@@ -64,6 +73,8 @@ See QUAT")
 This disregards the orientation of the rotation encoded, and treats
 them the same regardless of whether they rotate around the 'long way'
 or the 'short way'.
+If passed a dual-quaternion, the real is tested by qequal, and the
+dual is tested by q=.
 
 See QUAT
 See Q=")
@@ -72,6 +83,7 @@ See Q=")
     "Returns the element-wise addition of the passed quaternions.
 
 You may also pass a real number to add to each component.
+If passed a dual-quaternion, both the real and dual are added.
 
 See QUAT
 See NQ+")
@@ -80,6 +92,7 @@ See NQ+")
     "Returns the first quaternion after being modified by element-wise addition of all passed quaternions.
 
 You may also pass a real number to add to each component.
+If passed a dual-quaternion, both the real and dual are added.
 
 See QUAT
 See Q+")
@@ -88,6 +101,7 @@ See Q+")
     "Returns the element-wise subtraction of the passed quaternions.
 
 You may also pass a real number to subtract from each component.
+If passed a dual-quaternion, both the real and dual are subtracted.
 
 See QUAT
 See NQ+")
@@ -96,6 +110,7 @@ See NQ+")
     "Returns the first quaternion after being modified by element-wise subtraction of all passed quaternions.
 
 You may also pass a real number to subtract from each component.
+If passed a dual-quaternion, both the real and dual are subtracted.
 
 See QUAT
 See Q-")
@@ -105,6 +120,9 @@ See Q-")
 
 You may also pass a real number to multiply with each component.
 Note that for quaternions this is *not* element-wise multiplication.
+If passed a dual-quaternion, the real side is multiplied normally,
+while the dual side is multiplied with the real side to ensure the
+quaternions stay true.
 
 See QUAT
 See NQ*")
@@ -114,6 +132,9 @@ See NQ*")
 
 You may also pass a real number to multiply with each component.
 Note that for quaternions this is *not* element-wise multiplication.
+If passed a dual-quaternion, the real side is multiplied normally,
+while the dual side is multiplied with the real side to ensure the
+quaternions stay true.
 
 See QUAT
 See NQ*")
@@ -127,10 +148,14 @@ See NQ*")
   (function q.
     "Returns the dot product of the two quaternions.
 
+If passed a dual-quaternion, only the real quaternion is dotted.
+
 See QUAT")
   
   (function qlength2
     "Returns the squared length of the quaternion.
+
+If passed a dual-quaternion, only the real quaternion is measured.
 
 See QUAT
 See QLENGTH")
@@ -138,11 +163,16 @@ See QLENGTH")
   (function qlength
     "Returns the length of the quaternion.
 
+If passed a dual-quaternion, only the real quaternion is measured.
+
 See QUAT
 See QLENGTH2")
   
   (function qunit
     "Returns a normalised copy of the quaternion.
+
+If passed a dual-quaternion, the real and dual part are normalised by
+the length of the real part.
 
 See QUAT
 See NQUNIT")
@@ -150,11 +180,17 @@ See NQUNIT")
   (function nqunit
     "Returns the quaternion after normalising it.
 
+If passed a dual-quaternion, the real and dual part are normalised by
+the length of the real part.
+
 See QUAT
 See QUNIT")
   
   (function qconjugate
     "Returns the conjugate of the quaternion.
+
+If passed a dual-quaternion, both the real and dual part are
+conjugated independently.
 
 See QUAT")
   
@@ -168,6 +204,9 @@ See QUAT")
 
 This essentially rotates the vector by the rotation expressed by the
 quaternion.
+
+If passed a dual-quaternion, the vector is first rotated, then
+translated by the encoded transforms.
 
 See QUAT
 See 3D-VECTORS:VEC3")
@@ -256,7 +295,40 @@ See QUAT-P
 See QX
 See QY
 See QZ
-See QW")
+See QW
+See QSETF
+See QFROM-ANGLE
+See QTOWARDS
+See QAXIS
+See QANGLE
+See Q=
+See Q/=
+See QEQUAL
+See Q+
+See NQ+
+See Q-
+See NQ-
+See Q*
+See NQ*
+See Q/
+See NQ/
+See Q.
+See QLENGTH2
+See QLENGTH
+See QUNIT
+See NQUNIT
+See QCONJUGATE
+See QINV
+See Q*V
+See QMIX
+See QNLERP
+See QSLERP
+See QEXPT
+See NQEXPT
+See QLOOKAT
+See QMAT3
+See QMAT4
+See QFROM-MAT")
   
   (function quat
     "Constructs a quaternion.
@@ -299,22 +371,51 @@ See QUAT (type)")
     "")
   
   (function dquat
-    "")
+    "Encompasses a dual-quaternion.
+
+Dual-quaternions are composed of two quaternions, the 'real'
+representing a rotation, and the 'dual' representing a translation.
+
+See DQUAT (type)
+See DQCOPY
+See DQUAT-P
+See QREAL
+See QDUAL
+See Q=
+See Q/=
+See QEQUAL
+See Q+
+See NQ+
+See Q-
+See NQ-
+See Q*
+See NQ*
+See Q/
+See NQ/
+See Q.
+See QUNIT
+See NQUNIT
+See QCONJUGATE
+See Q*V")
   
   (function dqcopy
-    "")
+    "Returns a fresh copy of the dual-quaternion.
+
+See DQUAT")
   
   (function dquat-p
-    "")
+    "Returns true if the given object is a dual-quaternion.
+
+See DQUAT")
   
-  (function dx
-    "")
+  (function qreal
+    "Accesses the quaternion encompassing the rotation of the dual-quaternion.
+
+see QUAT
+See DQUAT")
   
-  (function dy
-    "")
-  
-  (function dz
-    "")
-  
-  (function dw
-    ""))
+  (function qdual
+    "Accesses the quaternion encompassing the translation of the dual-quaternion.
+
+See QUAT
+See DQUAT"))
