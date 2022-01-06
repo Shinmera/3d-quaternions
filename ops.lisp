@@ -15,6 +15,13 @@
               (%qw ,q) ,(ensure-float-param w env))
        ,q)))
 
+(defmacro dqsetf (quat real dual)
+  (let ((q (gensym "QUAT")))
+    `(let ((,q ,quat))
+       (psetf (qreal ,q) ,real
+              (qdual ,q) ,dual)
+       ,q)))
+
 (define-ofun qfrom-angle (axis angle)
   (let ((s (sin (* 0.5 (ensure-float angle)))))
     (quat (* s (vx3 axis))
@@ -48,19 +55,26 @@
 (define-ofun qangle (quat)
   (* 2.0 (the single-float (acos (qw quat)))))
 
-(defmacro %2quat-op (a b combination red &rest 2q-override)
-  (let ((red (if (listp red) red (list red)))
+(defmacro %2quat-op (name a b combination qred dqred &optional 2q-override)
+  (let ((qred (if (listp qred) qred (list qred)))
+        (dqred (if (listp dqred) dqred (list dqred)))
         (ag (gensym "A")) (bg (gensym "B")))
     `(etypecase ,a
        (real (let ((,ag (ensure-float ,a)))
                (etypecase ,b
-                 (quat (,@red (,combination ,ag (qx ,b)) (,combination ,ag (qy ,b)) (,combination ,ag (qz ,b)) (,combination ,ag (qw ,b)))))))
+                 (quat (,@qred (,combination ,ag (qx ,b)) (,combination ,ag (qy ,b)) (,combination ,ag (qz ,b)) (,combination ,ag (qw ,b))))
+                 (dquat (,@dqred (,name ,a (qreal ,b)) (,name ,a (qdual ,b)))))))
        (quat (etypecase ,b
                (real (let ((,bg (ensure-float ,b)))
-                       (,@red (,combination (qx ,a) ,bg) (,combination (qy ,a) ,bg) (,combination (qz ,a) ,bg) (,combination (qw ,a) ,bg))))
-               (quat (,@red
-                      ,@(or 2q-override
-                            `((,combination (qx ,a) (qx ,b)) (,combination (qy ,a) (qy ,b)) (,combination (qz ,a) (qz ,b)) (,combination (qw ,a) (qw ,b)))))))))))
+                       (,@qred (,combination (qx ,a) ,bg) (,combination (qy ,a) ,bg) (,combination (qz ,a) ,bg) (,combination (qw ,a) ,bg))))
+               (quat ,(if 2q-override
+                          `(,2q-override ,a ,b ,qred)
+                          `(,@qred (,combination (qx ,a) (qx ,b)) (,combination (qy ,a) (qy ,b)) (,combination (qz ,a) (qz ,b)) (,combination (qw ,a) (qw ,b)))))))
+       (dquat (etypecase ,b
+                (real (,@dqred (,name (qreal ,a) ,b) (,name (qdual ,a) ,b)))
+                (dquat ,(if 2q-override
+                            `(,2q-override ,a ,b ,dqred)
+                            `(,@dqred (,name (qreal ,a) (qreal ,b)) (,name (qdual ,a) (qdual ,b))))))))))
 
 (defmacro define-quatcomp (name op &optional (bundle 'and))
   (let ((2quat-name (intern* '2quat "-" name)))
@@ -69,7 +83,7 @@
        (declaim (ftype (function ((or quat real) &rest (or quat real)) boolean) ,name))
        (declaim (inline ,name ,2quat-name))
        (define-ofun ,2quat-name (a b)
-         (%2quat-op a b ,op ,bundle))
+         (%2quat-op ,2quat-name a b ,op ,bundle ,bundle))
        (define-ofun ,name (val &rest vals)
          (loop for prev = val then next
                for next in vals
@@ -86,20 +100,23 @@
 (define-quatcomp q/= ~/= or)
 
 (define-ofun qequal (a b)
-  (or (q= a b)
-      (and (< (abs (+ (qx a) (qx b))) *eps*)
-           (< (abs (+ (qy a) (qy b))) *eps*)
-           (< (abs (+ (qz a) (qz b))) *eps*)
-           (< (abs (+ (qw a) (qw b))) *eps*))))
+  (etypecase a
+    (quat (or (q= a b)
+              (and (< (abs (+ (qx a) (qx b))) *eps*)
+                   (< (abs (+ (qy a) (qy b))) *eps*)
+                   (< (abs (+ (qz a) (qz b))) *eps*)
+                   (< (abs (+ (qw a) (qw b))) *eps*))))
+    (dquat (and (qequal (qreal a) (qreal b))
+                (q= (qdual a) (qdual b))))))
 
-(defmacro define-nquatop (name op &rest 2q-override)
+(defmacro define-nquatop (name op &optional 2q-override)
   (let ((2quat-name (intern* '2quat "-" name)))
     `(progn
        (declaim (inline ,name ,2quat-name))
        (declaim (ftype (function (quat &rest (or quat real)) quat) ,name))
        (declaim (ftype (function (quat (or quat real)) quat) ,2quat-name))
        (define-ofun ,2quat-name (a b)
-         (%2quat-op a b ,op (qsetf a) ,@2q-override))
+         (%2quat-op ,2quat-name a b ,op (qsetf a) (dqsetf a) ,2q-override))
        (define-ofun ,name (val &rest vals)
          (if vals
              (loop for v in vals
@@ -112,15 +129,15 @@
            (1 `(,',2quat-name ,val ,(first vals)))
            (T `(,',name (,',2quat-name ,val ,(first vals)) ,@(rest vals))))))))
 
-(defmacro define-quatop (name nname op &rest 2q-override)
+(defmacro define-quatop (name nname op &optional 2q-override)
   (let ((2quat-name (intern* '2quat "-" name)))
     `(progn
-       (define-nquatop ,nname ,op ,@2q-override)
+       (define-nquatop ,nname ,op ,2q-override)
        (declaim (inline ,name ,2quat-name))
        (declaim (ftype (function ((or quat real) &rest (or quat real)) quat) ,name))
        (declaim (ftype (function ((or quat real) (or quat real)) quat) ,2quat-name))
        (define-ofun ,2quat-name (a b)
-         (%2quat-op a b ,op quat ,@2q-override))
+         (%2quat-op ,2quat-name a b ,op quat dquat ,2q-override))
        (define-ofun ,name (val &rest vals)
          (cond ((cdr vals)
                 (apply #',nname (,2quat-name val (first vals)) (rest vals)))
@@ -134,48 +151,102 @@
 
 (define-quatop q+ nq+ +)
 (define-quatop q- nq- -)
-(define-quatop q* nq* *
-  (+ (+ (* (qx b) (qw a))) (+ (* (qy b) (qz a))) (- (* (qz b) (qy a))) (+ (* (qw b) (qx a))))
-  (+ (- (* (qx b) (qx a))) (+ (* (qy b) (qw a))) (+ (* (qz b) (qx a))) (+ (* (qw b) (qy a))))
-  (+ (+ (* (qx b) (qy a))) (- (* (qy b) (qx a))) (+ (* (qz b) (qw a))) (+ (* (qw b) (qz a))))
-  (+ (- (* (qx b) (qz a))) (- (* (qy b) (qy a))) (- (* (qz b) (qz a))) (+ (* (qw b) (qw a)))))
+(macrolet ((2-exp (a b red)
+             (case (car red)
+               ((qsetf quat)
+                `(,@red
+                  (+ (+ (* (qx ,b) (qw ,a))) (+ (* (qy ,b) (qz ,a))) (- (* (qz ,b) (qy ,a))) (+ (* (qw ,b) (qx ,a))))
+                  (+ (- (* (qx ,b) (qx ,a))) (+ (* (qy ,b) (qw ,a))) (+ (* (qz ,b) (qx ,a))) (+ (* (qw ,b) (qy ,a))))
+                  (+ (+ (* (qx ,b) (qy ,a))) (- (* (qy ,b) (qx ,a))) (+ (* (qz ,b) (qw ,a))) (+ (* (qw ,b) (qz ,a))))
+                  (+ (- (* (qx ,b) (qz ,a))) (- (* (qy ,b) (qy ,a))) (- (* (qz ,b) (qz ,a))) (+ (* (qw ,b) (qw ,a))))))
+               (dquat
+                `(let ((,a (qunit ,a))
+                       (,b (qunit ,b)))
+                   (dquat
+                    (q* (qreal ,a) (qreal ,b))
+                    (nq+ (q* (qreal ,a) (qdual ,b))
+                         (q* (qdual ,a) (qreal ,b))))))
+               (dqsetf
+                `(let ((,a (nqunit ,a))
+                       (,b (qunit ,b)))
+                   (dqsetf ,a
+                           (q* (qreal ,a) (qreal ,b))
+                           (nq+ (q* (qreal ,a) (qdual ,b))
+                                (q* (qdual ,a) (qreal ,b)))))))))
+  (define-quatop q* nq* * 2-exp))
 (define-quatop q/ nq/ /)
 
+(declaim (inline q.))
 (define-ofun q. (a b)
-  (+ (* (qx a) (qx b))
-     (* (qy a) (qy b))
-     (* (qz a) (qz b))
-     (* (qw a) (qw b))))
+  (flet ((thunk (a b)
+           (+ (* (qx a) (qx b))
+              (* (qy a) (qy b))
+              (* (qz a) (qz b))
+              (* (qw a) (qw b)))))
+    (etypecase a
+      (quat
+       (thunk a b))
+      (dquat
+       (thunk (qreal a) (qreal b))))))
 
+(declaim (inline qlength2))
 (declaim (ftype (function (quat) (#.*float-type* 0.0)) qlength2))
 (define-ofun qlength2 (a)
   (q. a a))
 
+(declaim (inline qlength))
 (define-ofun qlength (a)
   (sqrt (qlength2 a)))
 
+(declaim (inline qunit))
 (define-ofun qunit (a)
-  (q/ a (qlength a)))
+  (etypecase a
+    (quat
+     (q/ a (qlength a)))
+    (dquat
+     (let ((mag (/ (qlength (qreal a)))))
+       (dquat (q* (qreal a) mag)
+              (q* (qdual a) mag))))))
 
+(declaim (inline nqunit))
 (define-ofun nqunit (a)
-  (nq/ a (qlength a)))
+  (etypecase a
+    (quat
+     (nq/ a (qlength a)))
+    (dquat
+     (let ((mag (/ (qlength (qreal a)))))
+       (nq* (qreal a) mag)
+       (nq* (qdual a) mag)
+       a))))
 
+(declaim (inline qconjugate))
 (define-ofun qconjugate (a)
-  (quat (- (qx a)) (- (qy a)) (- (qz a)) (qw a)))
+  (flet ((thunk (a)
+           (quat (- (qx a)) (- (qy a)) (- (qz a)) (qw a))))
+    (etypecase a
+      (quat
+       (thunk a))
+      (dquat
+       (dquat (thunk (qreal a)) (thunk (qdual a)))))))
 
 (define-ofun qinv (a)
   (let ((div (/ -1.0 (qlength2 a))))
     (quat (* (qx a) div) (* (qy a) div) (* (qz a) div) (* (qw a) (- div)))))
 
 (define-ofun q*v (q v)
-  (let ((qw2 (* (qw q) (qw q)))
-        (2qw (* 2.0 (qw q)))
-        (q.q (v. q q))
-        (q.v (v. q v))
-        (c (vc q v)))
-    (vec (+ (* 2.0 (qx q) q.v) (* (vx v) (- qw2 q.q)) (* 2qw (vx c)))
-         (+ (* 2.0 (qy q) q.v) (* (vy v) (- qw2 q.q)) (* 2qw (vx c)))
-         (+ (* 2.0 (qz q) q.v) (* (vz v) (- qw2 q.q)) (* 2qw (vx c))))))
+  (etypecase q
+    (quat
+     (let ((qw2 (* (qw q) (qw q)))
+           (2qw (* 2.0 (qw q)))
+           (q.q (v. q q))
+           (q.v (v. q v))
+           (c (vc q v)))
+       (vec (+ (* 2.0 (qx q) q.v) (* (vx v) (- qw2 q.q)) (* 2qw (vx c)))
+            (+ (* 2.0 (qy q) q.v) (* (vy v) (- qw2 q.q)) (* 2qw (vx c)))
+            (+ (* 2.0 (qz q) q.v) (* (vz v) (- qw2 q.q)) (* 2qw (vx c))))))
+    (dquat
+     (let ((d (nq* (qconjugate (qreal q)) (qdual q) 2.0)))
+       (nv+ (q*v (qreal q) v) d)))))
 
 (define-ofun qmix (from to x)
   (nq+ (q* from (- 1.0 (ensure-float x)))
