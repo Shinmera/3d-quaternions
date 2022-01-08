@@ -277,7 +277,20 @@ See QUAT
 See QMAT3
 See QMAT4
 See 3D-MATRICES:MAT3
-See 3D-MATRICES:MAT4"))
+See 3D-MATRICES:MAT4")
+
+  (function qposition
+    "Return the position vector encoded by the dual-quaternion.
+
+See 3D-VECTORS:VEC3
+See DQUAT")
+
+  (function qfrom-position
+    "Turn a rotation quaternion and a position vector into a dual-quaternion.
+
+See QUAT
+See 3D-VECTORS:VEC3
+See DQUAT"))
 
 ;; struct.lisp
 (docs:define-docs

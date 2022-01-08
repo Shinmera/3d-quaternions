@@ -329,3 +329,9 @@
       (mat4
        (with-fast-matref (m mat 4)
          (stub))))))
+
+(defun qposition (dquat)
+  (vxyz (nq* (qconjugate (qreal dquat)) (qdual dquat) 2.0)))
+
+(defun qfrom-position (quat vec)
+  (dquat quat (q* quat (quat (vx vec) (vy vec) (vz vec) 0) 0.5)))

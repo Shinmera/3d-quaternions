@@ -46,7 +46,9 @@
    #:qlookat
    #:qmat3
    #:qmat4
-   #:qfrom-mat)
+   #:qfrom-mat
+   #:qposition
+   #:qfrom-position)
   ;; struct.lisp
   (:export
    #:quat
