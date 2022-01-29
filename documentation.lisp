@@ -381,9 +381,6 @@ See QUAT (type)")
 See QUAT (type)")
 
   (type dquat
-    "")
-  
-  (function dquat
     "Encompasses a dual-quaternion.
 
 Dual-quaternions are composed of two quaternions, the 'real'
@@ -410,6 +407,13 @@ See QUNIT
 See NQUNIT
 See QCONJUGATE
 See Q*V")
+  
+  (function dquat
+    "Constructs a dual-quaternion
+
+If no arguments are passed, an \"empty\" dual-quaternion is returned.
+
+See DQUAT (type)")
   
   (function dqcopy
     "Returns a fresh copy of the dual-quaternion.

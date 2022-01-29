@@ -19,7 +19,7 @@ Quaternions always use ``float``s. Where sensible, operations should accept ``re
 
 ::
 (q+ (quat 1 2 3 4) 4 5 6)
-(qfrom-rotation +vz+ PI)
+(qfrom-angle +vz+ PI)
 ::
 
 3d-quaternions implements pretty much all quaternion operations you might need, including comparators, dot product, matrix conversion, and so forth. There's also modifying variants of most operators, which have the same name, except they are prefixed by an ``n``.

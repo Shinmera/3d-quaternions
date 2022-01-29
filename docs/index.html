@@ -1,0 +1,335 @@
+<!DOCTYPE html> <html lang="EN"> <head> <meta charset="utf-8"> <title>3d Quaternions</title> <style>html body{margin:0 auto 0 auto;padding:20px;max-width:1024px;font-family:sans-serif;font-size:14pt;overflow-y:scroll;}html body a{text-decoration:none;}html body a[href]{color:#0055AA;}html body a[href]:hover{color:#0088EE;}html body pre{background:#FAFAFA;border:1px solid #DDDDDD;padding:0.75em;overflow-x:auto;}html body pre >code a[href]{color:#223388;}article.project h1{font-size:1.7em;}article.project h1,article.project h2,article.project h3,article.project h4,article.project h5,article.project h6{margin:0.2em 0 0.1em 0;text-indent:1em;}article.project >header{text-align:center;}article.project >header img.logo{display:block;margin:auto;max-height:170px;}article.project >header h1{display:inline-block;text-indent:0;font-size:2.5em;}article.project >header .version{vertical-align:bottom;}article.project >header .languages{margin-top:-0.5em;text-transform:capitalize;}article.project >header .description{margin:0;}article.project >header .pages{margin-top:0.5em;font-size:1.2em;text-transform:capitalize;}article.project >header .pages a{display:inline-block;padding:0 0.2em;}article.project >section{margin:1em 0 1em 0;}article.project #index >ul{list-style:none;margin:0;padding:0;}article.project .row label{display:inline-block;min-width:8em;}article.project #system .row{display:flex;}article.project #system #dependencies{display:inline;margin:0;padding:0;}article.project #system #dependencies li{display:inline;padding:0 0.2em;}article.definition{margin:1em 0 0 0;}article.definition >header h1,article.definition >header h2,article.definition >header h3,article.definition >header h4,article.definition >header h5,article.definition >header h6{text-indent:0;display:inline-block;}article.definition >header ul{display:inline-block;list-style:none;margin:0;padding:0;}article.definition >header ul li{display:inline-block;padding:0 0.2em 0 0;}article.definition >header .visibility{display:none;}article.definition >header .visibility,article.definition >header .type{text-transform:lowercase;}article.definition >header .source-link{visibility:hidden;float:right;}article.definition >header .source-link:after{visibility:visible;content:"[SRC]";}article.definition .docstring{margin:0 0 0 1em;}article.definition .docstring pre{font-size:0.8em;white-space:pre-wrap;}.definition.package >header ul.nicknames{display:inline-block;list-style:none;margin:0;padding:0 0 0 1em;}.definition.package >header ul.nicknames li{display:inline;}.definition.package >header ul.nicknames:before{content:"(";}.definition.package >header ul.nicknames:after{content:")";}.definition.package ul.definitions{margin:0;list-style:none;padding:0 0 0 0.5em;}.definition.callable >header .name:before,.definition.type >header .name:before{content:"(";font-weight:normal;}.definition.callable >header .arguments:after,.definition.type >header .arguments:after{content:")";}.definition.callable >header .arguments .arguments:before,.definition.type >header .arguments .arguments:before{content:"(";}.definition.callable >header .arguments .argument,.definition.type >header .arguments .argument{padding:0;}.definition.callable >header .arguments .argument.lambda-list-keyword,.definition.type >header .arguments .argument.lambda-list-keyword{color:#991155;}.definition li>mark{background:none;border-left:0.3em solid #0088EE;padding-left:0.3em;display:block;} </style> </head> <body> <article class="project"> <header>   <h1>3d quaternions</h1>   <span class="version">1.0.0</span>    <p class="description">A utility library implementing quaternion and dual-quaternion functionality.</p>   </header> <section id="documentation"><article><h2 id="about 3d-quaternions">About 3d-quaternions</h2><p>This is a library for quaternions. It contains most of the quaternion operations one would usually expect out of such a library and offers them both in non-modifying and modifying versions where applicable. It also tries to be efficient where plausible. Each quaternion is made up of <code><a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AFLOAT" class="xref">float</a></code>s, which by default are <code><a href="#CLASS%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ASINGLE-FLOAT" class="xref">single-float</a></code>s, as they do not require value boxing on most modern systems and compilers.</p><h2 id="how to">How To</h2><p>Load it through ASDF or Quicklisp</p><code style="display:block" class="code-block"><pre>(ql:quickload :3d-quaternions)
+(<a href="http://l1sp.org/cl/use-package" class="xref">use-package</a> :org.shirakumo.flare.quaternion)</pre></code><p>Create a quaternion:</p><code style="display:block" class="code-block"><pre>(<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">quat</a>)</pre></code><p>Quaternions always use <code><a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AFLOAT" class="xref">float</a></code>s. Where sensible, operations should accept <code><a href="#CLASS%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AREAL" class="xref">real</a></code> numbers for convenience. All quaternion operations are prefixed with a <code>q</code> to allow importing the package without conflicts. </p><code style="display:block" class="code-block"><pre>(<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2B" class="xref">q+</a> (<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">quat</a> 1 2 3 4) 4 5 6)
+(<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-ANGLE" class="xref">qfrom-angle</a> <a href="https://Shinmera.github.io/3d-vectors/#VARIABLE%203D-VECTORS%3A%2BVZ%2B" class="xref">+vz+</a> <a href="http://l1sp.org/cl/pi" class="xref">PI</a>)</pre></code><p>3d-quaternions implements pretty much all quaternion operations you might need, including comparators, dot product, matrix conversion, and so forth. There's also modifying variants of most operators, which have the same name, except they are prefixed by an <code>n</code>.</p><code style="display:block" class="code-block"><pre>(let ((q (<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">quat</a>)))
+  (<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2A" class="xref">nq*</a> (<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2B" class="xref">nq+</a> q (<a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">quat</a> 1 2 3 4)) 3)
+  q)</pre></code><p><code><a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">quat</a></code>s are dumpable, meaning you can insert them as literals into your code and they will be properly saved to and restored from a FASL.</p><p>If you require higher precision than <code><a href="#CLASS%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ASINGLE-FLOAT" class="xref">single-float</a></code>s ensure, you can add <code>:3d-vectors-double-floats</code> to <code><a href="#VARIABLE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3A%2AFEATURES%2A" class="xref">*features*</a></code> and recompile the library <code>(asdf:compile-system :3d-quaternions :force T)</code>. Similarly, if you want to switch back to <code><a href="#CLASS%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ASINGLE-FLOAT" class="xref">single-float</a></code>s, you can remove the feature and recompile. Both at the same time is not supported as it would increase complexity in the library massively and make certain operations much slower.</p><h2 id="also see">Also See</h2><ul><li><p><a class="external-link" href="https://shinmera.github.io/3d-vectors">3d-vectors</a> for Vector operations in conjunction with this library.</p></li><li><p><a class="external-link" href="https://shinmera.github.io/3d-matrices">3d-matrices</a> for Matrix operations in conjunction with this library.</p></li></ul></article></section>   <section id="system"> <h2>System Information</h2>  <div class="row"> <label for="version">Version:</label> <a id="version">1.0.0</a> </div>   <div class="row"> <label for="dependencies">Dependencies:</label> <ul id="dependencies"><li><a class="external" href="https://Shinmera.github.io/documentation-utils/">documentation-utils</a></li><li><a class="external" href="https://Shinmera.github.io/3d-vectors/">3d-vectors</a></li><li><a class="external" href="https://Shinmera.github.io/3d-matrices/">3d-matrices</a></li></ul> </div>   <div class="row"> <label for="author">Author:</label> <a id="author" href="mailto:shinmera@tymoon.eu">Nicolas Hafner</a> </div>   <div class="row"> <label for="license">License:</label> <a id="license" href="https://github.com/Shinmera/3d-quaternions/blob/master/LICENSE">zlib</a> </div>   <div class="row"> <label for="homepage">Homepage:</label> <a id="homepage" href="https://Shinmera.github.io/3d-quaternions/">https://Shinmera.github.io/3d-quaternions/</a> </div>   <div class="row"> <label for="sources">Sources:</label> <a id="sources" href="https://github.com/Shinmera/3d-quaternions.git">https://github.com/Shinmera/3d-quaternions.git</a> </div>  </section>    <section id="index"> <h2>Definition Index</h2> <ul> <li> <article class="definition package" id="PACKAGE ORG.SHIRAKUMO.FLARE.QUATERNION"> <header> <h3> <a href="#PACKAGE%20ORG.SHIRAKUMO.FLARE.QUATERNION">ORG.SHIRAKUMO.FLARE.QUATERNION</a> </h3> <ul class="nicknames"></ul>  </header> <div class="docstring"><i>No documentation provided.</i></div> <ul class="definitions"> <li> <article class="definition structure" id="STRUCTURE ORG.SHIRAKUMO.FLARE.QUATERNION:DQUAT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">STRUCTURE</span> <h4 class="name"> <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT">DQUAT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><pre>Encompasses a dual-quaternion.
+
+Dual-quaternions are composed of two quaternions, the 'real'
+representing a rotation, and the 'dual' representing a translation.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT (type)</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQCOPY" class="xref">DQCOPY</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT-P" class="xref">DQUAT-P</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQREAL" class="xref">QREAL</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQDUAL" class="xref">QDUAL</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%3D" class="xref">Q=</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2F%3D" class="xref">Q/=</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQEQUAL" class="xref">QEQUAL</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2B" class="xref">Q+</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2B" class="xref">NQ+</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ-" class="xref">Q-</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ-" class="xref">NQ-</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2A" class="xref">Q*</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2A" class="xref">NQ*</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2F" class="xref">Q/</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2F" class="xref">NQ/</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ." class="xref">Q.</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUNIT" class="xref">QUNIT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQUNIT" class="xref">NQUNIT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQCONJUGATE" class="xref">QCONJUGATE</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2AV" class="xref">Q*V</a></pre></div> </article> </li>  <li> <article class="definition structure" id="STRUCTURE ORG.SHIRAKUMO.FLARE.QUATERNION:QUAT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">STRUCTURE</span> <h4 class="name"> <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT">QUAT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L10">Source</a>  </header> <div class="docstring"><pre>Encompasses a quaternion.
+
+A quaternion describes a rotational axis and an angle.
+This is a sub-structure of a VEC3, and as such can be used with any
+functions from 3D-VECTORS that support VEC3s.
+
+See <a href="https://Shinmera.github.io/3d-vectors/#FUNCTION%203D-VECTORS%3AVEC3" class="xref">3D-VECTORS:VEC3</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT (function)</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQCOPY" class="xref">QCOPY</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT-P" class="xref">QUAT-P</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQX" class="xref">QX</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQY" class="xref">QY</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQZ" class="xref">QZ</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQW" class="xref">QW</a>
+See <a href="#MACRO-FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQSETF" class="xref">QSETF</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-ANGLE" class="xref">QFROM-ANGLE</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQTOWARDS" class="xref">QTOWARDS</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQAXIS" class="xref">QAXIS</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQANGLE" class="xref">QANGLE</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%3D" class="xref">Q=</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2F%3D" class="xref">Q/=</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQEQUAL" class="xref">QEQUAL</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2B" class="xref">Q+</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2B" class="xref">NQ+</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ-" class="xref">Q-</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ-" class="xref">NQ-</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2A" class="xref">Q*</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2A" class="xref">NQ*</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2F" class="xref">Q/</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2F" class="xref">NQ/</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ." class="xref">Q.</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLENGTH2" class="xref">QLENGTH2</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLENGTH" class="xref">QLENGTH</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUNIT" class="xref">QUNIT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQUNIT" class="xref">NQUNIT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQCONJUGATE" class="xref">QCONJUGATE</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQINV" class="xref">QINV</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2AV" class="xref">Q*V</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMIX" class="xref">QMIX</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQNLERP" class="xref">QNLERP</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQSLERP" class="xref">QSLERP</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQEXPT" class="xref">QEXPT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQEXPT" class="xref">NQEXPT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLOOKAT" class="xref">QLOOKAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT3" class="xref">QMAT3</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT4" class="xref">QMAT4</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-MAT" class="xref">QFROM-MAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:DQCOPY"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQCOPY">DQCOPY</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">INSTANCE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><pre>Returns a fresh copy of the dual-quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:DQUAT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT">DQUAT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument lambda-list-keyword">&amp;OPTIONAL</li>    <li class="argument">REAL</li>    <li class="argument">DUAL</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L49">Source</a>  </header> <div class="docstring"><pre>Constructs a dual-quaternion
+
+If no arguments are passed, an &quot;empty&quot; dual-quaternion is returned.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT (type)</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:DQUAT-P"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT-P">DQUAT-P</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">OBJECT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><pre>Returns true if the given object is a dual-quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:NQ*"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2A">NQ*</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L154">Source</a>  </header> <div class="docstring"><pre>Returns the first quaternion after being modified by multiplication of the passed quaternions.
+
+You may also pass a real number to multiply with each component.
+Note that for quaternions this is *not* element-wise multiplication.
+If passed a dual-quaternion, the real side is multiplied normally,
+while the dual side is multiplied with the real side to ensure the
+quaternions stay true.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2A" class="xref">NQ*</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:NQ+"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2B">NQ+</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L152">Source</a>  </header> <div class="docstring"><pre>Returns the first quaternion after being modified by element-wise addition of all passed quaternions.
+
+You may also pass a real number to add to each component.
+If passed a dual-quaternion, both the real and dual are added.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2B" class="xref">Q+</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:NQ-"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ-">NQ-</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L153">Source</a>  </header> <div class="docstring"><pre>Returns the first quaternion after being modified by element-wise subtraction of all passed quaternions.
+
+You may also pass a real number to subtract from each component.
+If passed a dual-quaternion, both the real and dual are subtracted.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ-" class="xref">Q-</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:NQ/"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2F">NQ/</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L177">Source</a>  </header> <div class="docstring"><pre></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:NQEXPT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQEXPT">NQEXPT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>    <li class="argument">EXP</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L269">Source</a>  </header> <div class="docstring"><pre>Compute the exponentiation of a quaternion.
+
+Returns the modified quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:NQUNIT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQUNIT">NQUNIT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L212">Source</a>  </header> <div class="docstring"><pre>Returns the quaternion after normalising it.
+
+If passed a dual-quaternion, the real and dual part are normalised by
+the length of the real part.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUNIT" class="xref">QUNIT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q*"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2A">Q*</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L154">Source</a>  </header> <div class="docstring"><pre>Returns the multiplication of the passed quaternions.
+
+You may also pass a real number to multiply with each component.
+Note that for quaternions this is *not* element-wise multiplication.
+If passed a dual-quaternion, the real side is multiplied normally,
+while the dual side is multiplied with the real side to ensure the
+quaternions stay true.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2A" class="xref">NQ*</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q*V"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2AV">Q*V</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">Q</li>    <li class="argument">V</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L236">Source</a>  </header> <div class="docstring"><pre>Returns the vector after multiplying it by the quaternion.
+
+This essentially rotates the vector by the rotation expressed by the
+quaternion.
+
+If passed a dual-quaternion, the vector is first rotated, then
+translated by the encoded transforms.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="https://Shinmera.github.io/3d-vectors/#FUNCTION%203D-VECTORS%3AVEC3" class="xref">3D-VECTORS:VEC3</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q+"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2B">Q+</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L152">Source</a>  </header> <div class="docstring"><pre>Returns the element-wise addition of the passed quaternions.
+
+You may also pass a real number to add to each component.
+If passed a dual-quaternion, both the real and dual are added.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2B" class="xref">NQ+</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q-"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ-">Q-</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L153">Source</a>  </header> <div class="docstring"><pre>Returns the element-wise subtraction of the passed quaternions.
+
+You may also pass a real number to subtract from each component.
+If passed a dual-quaternion, both the real and dual are subtracted.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQ%2B" class="xref">NQ+</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q."> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ.">Q.</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>    <li class="argument">B</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L180">Source</a>  </header> <div class="docstring"><pre>Returns the dot product of the two quaternions.
+
+If passed a dual-quaternion, only the real quaternion is dotted.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q/"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2F">Q/</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L177">Source</a>  </header> <div class="docstring"><pre></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q/="> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%2F%3D">Q/=</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L100">Source</a>  </header> <div class="docstring"><pre>Returns true if any of the quaternions passed are not the same.
+
+This does not test for element-wise float exact equality,
+and instead compares accounting for a minimal epsilon of difference.
+If passed a dual-quaternion, both the real and dual are tested.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:Q="> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%3D">Q=</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VAL</li>    <li class="argument lambda-list-keyword">&amp;REST</li>    <li class="argument">VALS</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L99">Source</a>  </header> <div class="docstring"><pre>Returns true if the quaternions passed are the same.
+
+This does not test for element-wise float exact equality,
+and instead compares accounting for a minimal epsilon of difference.
+If passed a dual-quaternion, both the real and dual are tested.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QANGLE"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQANGLE">QANGLE</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L55">Source</a>  </header> <div class="docstring"><pre>Returns the angle around the rotation axis that the quaternion rotates by.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QAXIS"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQAXIS">QAXIS</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L52">Source</a>  </header> <div class="docstring"><pre>Returns the normalised axis around which the quaternion rotates.
+
+This is the same as just calling VUNIT.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="https://Shinmera.github.io/3d-vectors/#FUNCTION%203D-VECTORS%3AVUNIT" class="xref">3D-VECTORS:VUNIT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QCONJUGATE"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQCONJUGATE">QCONJUGATE</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L223">Source</a>  </header> <div class="docstring"><pre>Returns the conjugate of the quaternion.
+
+If passed a dual-quaternion, both the real and dual part are
+conjugated independently.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QCOPY"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQCOPY">QCOPY</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">INSTANCE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L10">Source</a>  </header> <div class="docstring"><pre>Creates an exact copy of the quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QDUAL"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQDUAL">QDUAL</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">INSTANCE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><pre>Accesses the quaternion encompassing the translation of the dual-quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:(SETF QDUAL)"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3A%28SETF%20QDUAL%29">(SETF QDUAL)</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VALUE</li>    <li class="argument">INSTANCE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><i>No documentation provided.</i></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QEQUAL"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQEQUAL">QEQUAL</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>    <li class="argument">B</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L102">Source</a>  </header> <div class="docstring"><pre>Returns true if the quaternions passed describe the same direction.
+
+This disregards the orientation of the rotation encoded, and treats
+them the same regardless of whether they rotate around the 'long way'
+or the 'short way'.
+If passed a dual-quaternion, the real is tested by qequal, and the
+dual is tested by q=.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQ%3D" class="xref">Q=</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QEXPT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQEXPT">QEXPT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>    <li class="argument">EXP</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L258">Source</a>  </header> <div class="docstring"><pre>Compute the exponentiation of a quaternion.
+
+Returns a fresh quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QFROM-ANGLE"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-ANGLE">QFROM-ANGLE</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">AXIS</li>    <li class="argument">ANGLE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L25">Source</a>  </header> <div class="docstring"><pre>Construct a quaternion from an axis and a rotation.
+
+Returns the freshly constructed quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QFROM-MAT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-MAT">QFROM-MAT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">MAT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L315">Source</a>  </header> <div class="docstring"><pre>Returns a quaternion that encompasses the same rotation described by the matrix.
+
+Both a MAT3 and MAT4 can be used.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT3" class="xref">QMAT3</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT4" class="xref">QMAT4</a>
+See <a href="https://Shinmera.github.io/3d-matrices/#FUNCTION%203D-MATRICES%3AMAT3" class="xref">3D-MATRICES:MAT3</a>
+See <a href="https://Shinmera.github.io/3d-matrices/#FUNCTION%203D-MATRICES%3AMAT4" class="xref">3D-MATRICES:MAT4</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QFROM-POSITION"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-POSITION">QFROM-POSITION</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>    <li class="argument">VEC</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L336">Source</a>  </header> <div class="docstring"><pre>Turn a rotation quaternion and a position vector into a dual-quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="https://Shinmera.github.io/3d-vectors/#FUNCTION%203D-VECTORS%3AVEC3" class="xref">3D-VECTORS:VEC3</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QINV"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQINV">QINV</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L232">Source</a>  </header> <div class="docstring"><pre>Returns the inverses of the quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QLENGTH"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLENGTH">QLENGTH</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L198">Source</a>  </header> <div class="docstring"><pre>Returns the length of the quaternion.
+
+If passed a dual-quaternion, only the real quaternion is measured.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLENGTH2" class="xref">QLENGTH2</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QLENGTH2"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLENGTH2">QLENGTH2</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L194">Source</a>  </header> <div class="docstring"><pre>Returns the squared length of the quaternion.
+
+If passed a dual-quaternion, only the real quaternion is measured.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLENGTH" class="xref">QLENGTH</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QLOOKAT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQLOOKAT">QLOOKAT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">DIR</li>    <li class="argument">UP</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L286">Source</a>  </header> <div class="docstring"><pre>Returns a quaternion that encompassses the rotation necessary to look in the described direction.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QMAT3"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT3">QMAT3</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L296">Source</a>  </header> <div class="docstring"><pre>Returns a MAT3 that encompasses the rotation described by the quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT4" class="xref">QMAT4</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-MAT" class="xref">QFROM-MAT</a>
+See <a href="https://Shinmera.github.io/3d-matrices/#FUNCTION%203D-MATRICES%3AMAT3" class="xref">3D-MATRICES:MAT3</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QMAT4"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT4">QMAT4</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L305">Source</a>  </header> <div class="docstring"><pre>Returns a MAT4 that encompasses the rotation described by the quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMAT3" class="xref">QMAT3</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQFROM-MAT" class="xref">QFROM-MAT</a>
+See <a href="https://Shinmera.github.io/3d-matrices/#FUNCTION%203D-MATRICES%3AMAT4" class="xref">3D-MATRICES:MAT4</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QMIX"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQMIX">QMIX</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">FROM</li>    <li class="argument">TO</li>    <li class="argument">X</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L251">Source</a>  </header> <div class="docstring"><pre>Returns a new quaternion mixed with the two.
+
+This is essentially Q = A*(1-X) + B*X
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QNLERP"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQNLERP">QNLERP</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">FROM</li>    <li class="argument">TO</li>    <li class="argument">X</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L255">Source</a>  </header> <div class="docstring"><pre>Returns the linearly interpolated quaternion between the two.
+
+This is essentially Q = A + (B-A)*X
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QPOSITION"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQPOSITION">QPOSITION</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">DQUAT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L333">Source</a>  </header> <div class="docstring"><pre>Return the position vector encoded by the dual-quaternion.
+
+See <a href="https://Shinmera.github.io/3d-vectors/#FUNCTION%203D-VECTORS%3AVEC3" class="xref">3D-VECTORS:VEC3</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QREAL"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQREAL">QREAL</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">INSTANCE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><pre>Accesses the quaternion encompassing the rotation of the dual-quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:(SETF QREAL)"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3A%28SETF%20QREAL%29">(SETF QREAL)</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VALUE</li>    <li class="argument">INSTANCE</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L40">Source</a>  </header> <div class="docstring"><i>No documentation provided.</i></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QSLERP"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQSLERP">QSLERP</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">FROM</li>    <li class="argument">TO</li>    <li class="argument">X</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L281">Source</a>  </header> <div class="docstring"><pre>Returns the spherically interpolated quaternion between the two.
+
+This attempts to compute the interpolation by rotating along the unit
+sphere.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QTOWARDS"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQTOWARDS">QTOWARDS</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">FROM</li>    <li class="argument">TO</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L32">Source</a>  </header> <div class="docstring"><pre>Construct a quaternion that describes the rotation from one vector to another.
+
+Returns the freshly constructed quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QUAT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT">QUAT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument lambda-list-keyword">&amp;OPTIONAL</li>    <li class="argument">X</li>    <li class="argument">Y</li>    <li class="argument">Z</li>    <li class="argument">W</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L24">Source</a>  </header> <div class="docstring"><pre>Constructs a quaternion.
+
+If no arguments are passed, a unit quaternion of 0 0 0 1 is returned.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT (type)</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QUAT-P"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT-P">QUAT-P</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">OBJECT</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L10">Source</a>  </header> <div class="docstring"><pre>Returns true if the passed object is a quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QUNIT"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUNIT">QUNIT</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">A</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L202">Source</a>  </header> <div class="docstring"><pre>Returns a normalised copy of the quaternion.
+
+If passed a dual-quaternion, the real and dual part are normalised by
+the length of the real part.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ANQUNIT" class="xref">NQUNIT</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QW"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQW">QW</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VEC</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L20">Source</a>  </header> <div class="docstring"><pre>Accesses the fourth component of the quaternion.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT (type)</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QX"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQX">QX</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VEC</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L17">Source</a>  </header> <div class="docstring"><pre>Accesses the first component of the quaternion.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT (type)</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QY"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQY">QY</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VEC</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L18">Source</a>  </header> <div class="docstring"><pre>Accesses the second component of the quaternion.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT (type)</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QZ"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQZ">QZ</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">VEC</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/struct.lisp#L19">Source</a>  </header> <div class="docstring"><pre>Accesses the third component of the quaternion.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT (type)</a></pre></div> </article> </li>  <li> <article class="definition macro callable" id="MACRO-FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:DQSETF"> <header> <span class="visibility">EXTERNAL</span> <span class="type">MACRO</span> <h4 class="name"> <a href="#MACRO-FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQSETF">DQSETF</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>    <li class="argument">REAL</li>    <li class="argument">DUAL</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L18">Source</a>  </header> <div class="docstring"><pre>Update the fields of a dual-quaternion.
+
+Returns the modified dual-quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3ADQUAT" class="xref">DQUAT</a></pre></div> </article> </li>  <li> <article class="definition macro callable" id="MACRO-FUNCTION ORG.SHIRAKUMO.FLARE.QUATERNION:QSETF"> <header> <span class="visibility">EXTERNAL</span> <span class="type">MACRO</span> <h4 class="name"> <a href="#MACRO-FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQSETF">QSETF</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">QUAT</li>    <li class="argument">X</li>    <li class="argument">Y</li>    <li class="argument">Z</li>    <li class="argument">W</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/3d-quaternions/blob/master/ops.lisp#L9">Source</a>  </header> <div class="docstring"><pre>Update the fields of a quaternion.
+
+Returns the modified quaternion.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.FLARE.QUATERNION%3AQUAT" class="xref">QUAT</a></pre></div> </article> </li> </ul> </article> </li> </ul> </section>  </article> <script>window.addEventListener("DOMContentLoaded", function(){
+    var unmarkElement = function(el){
+        if(el.tagName === "mark" || el.tagName === "MARK"){
+            [].forEach.call(el.childNodes, function(child){
+                el.parentNode.insertBefore(child, el);
+            });
+            el.parentNode.removeChild(el);
+        }else if(el.parentNode.tagName === "mark"){
+            return unmarkElement(el.parentNode);
+        }
+        return null;
+    }
+
+    var unmarkAll = function(root){
+        root = root || document;
+        [].forEach.call(root.querySelectorAll("mark"), unmarkElement);
+    }
+    
+    var markElement = function(el){
+        if(el.parentNode.tagName === "mark" || el.parentNode.tagName === "MARK"){
+            return el.parentNode;
+        } else {
+            unmarkAll();
+            var marked = document.createElement("mark");
+            el.parentNode.insertBefore(marked, el);
+            marked.appendChild(el);
+            return marked;
+        }
+    }
+
+    var markFragmented = function(){
+        if(window.location.hash){
+            var el = document.getElementById(decodeURIComponent(window.location.hash.substr(1)));
+            if(el) markElement(el);
+        }
+    }
+
+    var registerXrefLink = function(link){
+        var el = document.getElementById(decodeURIComponent(link.getAttribute("href").substr(1)));
+        if(el){
+            link.addEventListener("click", function(){
+                markElement(el);
+            });
+        }
+    }
+
+    var registerXrefLinks = function(root){
+        root = root || document;
+        [].forEach.call(root.querySelectorAll("a.xref"), registerXrefLink);
+    }
+
+    markFragmented();
+    registerXrefLinks();
+}); </script> </body> </html> 
