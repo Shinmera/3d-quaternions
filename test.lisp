@@ -19,7 +19,7 @@
   (of-type quat (quat))
   (of-type quat (quat 0 0 0 1))
   (of-type dquat (dquat))
-  (of-type dquat (dquat 0 0 0 1 0 0 0 1))
+  (of-type dquat (dquat (quat 0 0 0 1) (quat 0 0 0 1)))
   (true (quat-p (quat)))
   (true (dquat-p (dquat)))
   (is = 0 (qx (quat)))
