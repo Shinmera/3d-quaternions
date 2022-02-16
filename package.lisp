@@ -15,6 +15,7 @@
   (:export
    #:dqsetf
    #:qsetf
+   #:q<-
    #:qfrom-angle
    #:qtowards
    #:qaxis

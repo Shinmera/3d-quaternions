@@ -22,6 +22,13 @@
               (qdual ,q) ,dual)
        ,q)))
 
+(define-ofun q<- (target source)
+  (setf (%vx3 target) (%vx3 source))
+  (setf (%vy3 target) (%vy3 source))
+  (setf (%vz3 target) (%vz3 source))
+  (setf (%qw target) (%qw source))
+  target)
+
 (define-ofun qfrom-angle (axis angle)
   (let ((s (sin (* 0.5 (ensure-float angle)))))
     (quat (* s (vx3 axis))

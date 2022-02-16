@@ -21,6 +21,13 @@ See DQUAT")
 Returns the modified quaternion.
 
 See QUAT")
+
+  (function q<-
+    "Copies the quaternion information into the target from the source.
+
+Returns the modified quaternion.
+
+See QUAT")
   
   (function qfrom-angle
     "Construct a quaternion from an axis and a rotation.
