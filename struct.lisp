@@ -21,7 +21,7 @@
 
 (declaim (inline quat))
 (declaim (ftype (function (&optional real real real real) quat) quat))
-(define-ofun quat (&optional (x 0.0) (y 0.0) (z 0.0) (w 0.0))
+(define-ofun quat (&optional (x 0.0) (y 0.0) (z 0.0) (w 1.0))
   (%quat (ensure-float x) (ensure-float y) (ensure-float z) (ensure-float w)))
 
 (define-compiler-macro quat (&environment env &optional (x 0) (y 0) (z 0) (w 1))
