@@ -240,17 +240,17 @@
   (let ((div (/ -1.0 (qlength2 a))))
     (quat (* (qx a) div) (* (qy a) div) (* (qz a) div) (* (qw a) (- div)))))
 
+(declaim (inline q*v))
 (define-ofun q*v (q v)
   (etypecase q
     (quat
-     (let ((qw2 (* (qw q) (qw q)))
-           (2qw (* 2.0 (qw q)))
-           (q.q (v. q q))
-           (q.v (v. q v))
-           (c (vc q v)))
-       (vec (+ (* 2.0 (qx q) q.v) (* (vx v) (- qw2 q.q)) (* 2qw (vx c)))
-            (+ (* 2.0 (qy q) q.v) (* (vy v) (- qw2 q.q)) (* 2qw (vx c)))
-            (+ (* 2.0 (qz q) q.v) (* (vz v) (- qw2 q.q)) (* 2qw (vx c))))))
+     (let* ((qw2 (* (qw q) (qw q)))
+            (2qw (* 2.0 (qw q)))
+            (q.q (- qw2 (v. q q)))
+            (2q.v (* 2.0 (v. q v))))
+       (vec (+ (* (vx3 q) 2q.v) (* (vx3 v) q.q) (* (- (* (vy3 q) (vz3 v)) (* (vz3 q) (vy3 v))) 2qw))
+            (+ (* (vy3 q) 2q.v) (* (vy3 v) q.q) (* (- (* (vz3 q) (vx3 v)) (* (vx3 q) (vz3 v))) 2qw))
+            (+ (* (vz3 q) 2q.v) (* (vz3 v) q.q) (* (- (* (vx3 q) (vy3 v)) (* (vy3 q) (vx3 v))) 2qw)))))
     (dquat
      (let ((d (nq* (qconjugate (qreal q)) (qdual q) 2.0)))
        (nv+ (q*v (qreal q) v) d)))))
