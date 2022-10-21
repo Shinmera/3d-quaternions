@@ -320,29 +320,32 @@
 
 (define-ofun qmat3 (quat)
   (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
-         (xx (* x x)) (xy (* x y)) (xz (* x z)) (xw (* x w))
-         (yy (* y y)) (yz (* y z)) (yw (* y w))
-         (zz (* z z)) (zw (* z w)))
-    (mat3 (list (- 1 (* 2 (+ yy zz))) (* 2 (- xy zw)) (* 2 (+ xz yw))
-                (* 2 (+ xy zw)) (- 1 (* 2 (+ xx zz))) (* 2 (- yz xw))
-                (* 2 (- xz yw)) (* 2 (+ yz xw)) (- 1 (* 2 (+ xx yy)))))))
+         (tx (* 2.0 x)) (ty (* 2.0 y)) (tz (* 2.0 z))
+         (twx (* tx w)) (twy (* ty w)) (twz (* tz w))
+         (txx (* tx x)) (txy (* tx x)) (txz (* tz x))
+         (tyy (* ty y)) (tyz (* tz y)) (tzz (* tz z)))
+    (mat (- 1.0 (+ tyy tzz)) (- txy twz) (+ txz twy)
+         (+ txy twz) (- 1.0 (+ txx tzz)) (- tyz twx)
+         (- txz twy) (+ tyz twx) (- 1.0 (+ txx tyy)))))
 
 (define-ofun qmat4 (quat)
   (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
-         (xx (* x x)) (xy (* x y)) (xz (* x z)) (xw (* x w))
-         (yy (* y y)) (yz (* y z)) (yw (* y w))
-         (zz (* z z)) (zw (* z w)))
-    (mat4 (list (- 1 (* 2 (+ yy zz))) (* 2 (- xy zw)) (* 2 (+ xz yw)) 0.0
-                (* 2 (+ xy zw)) (- 1 (* 2 (+ xx zz))) (* 2 (- yz xw)) 0.0
-                (* 2 (- xz yw)) (* 2 (+ yz xw)) (- 1 (* 2 (+ xx yy))) 0.0
-                0.0             0.0             0.0                   1.0))))
+         (tx (* 2.0 x)) (ty (* 2.0 y)) (tz (* 2.0 z))
+         (twx (* tx w)) (twy (* ty w)) (twz (* tz w))
+         (txx (* tx x)) (txy (* tx x)) (txz (* tz x))
+         (tyy (* ty y)) (tyz (* tz y)) (tzz (* tz z)))
+    (mat (- 1.0 (+ tyy tzz)) (- txy twz) (+ txz twy) 0.0
+         (+ txy twz) (- 1.0 (+ txx tzz)) (- tyz twx) 0.0
+         (- txz twy) (+ tyz twx) (- 1.0 (+ txx tyy)) 0.0
+         0.0         0.0         0.0                 1.0)))
 
 (defun qfrom-mat (mat)
   (macrolet ((stub ()
-               `(let ((w (* 0.5 (sqrt (max 0.0 (+ 1.0 (+ (m 0 0)) (+ (m 1 1)) (+ (m 2 2)))))))
-                      (x (* 0.5 (sqrt (max 0.0 (+ 1.0 (+ (m 0 0)) (- (m 1 1)) (- (m 2 2)))))))
-                      (y (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (+ (m 1 1)) (- (m 2 2)))))))
-                      (z (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (- (m 1 1)) (+ (m 2 2))))))))
+               `(let* ((absq2 (expt (mdet mat) (/ 1 3)))
+                       (w (* 0.5 (sqrt (max 0.0 (+ absq2 (+ (m 0 0)) (+ (m 1 1)) (+ (m 2 2)))))))
+                       (x (* 0.5 (sqrt (max 0.0 (+ 1.0 (+ (m 0 0)) (- (m 1 1)) (- (m 2 2)))))))
+                       (y (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (+ (m 1 1)) (- (m 2 2)))))))
+                       (z (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (- (m 1 1)) (+ (m 2 2))))))))
                   (quat (float-sign (- (m 2 1) (m 1 2)) x)
                         (float-sign (- (m 0 2) (m 2 0)) y)
                         (float-sign (- (m 1 0) (m 0 1)) z)

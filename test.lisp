@@ -73,4 +73,7 @@
   (dotimes (i 100)
     (let ((axis (nvunit (vrand (vec 0 0 0) 10)))
           (angle (random (* 2 PI))))
-      (is m~= (qmat4 (qfrom-angle axis angle)) (mrotation axis angle)))))
+      (is m~= (qmat4 (qfrom-angle axis angle)) (mrotation axis angle))))
+  (dotimes (i 100)
+    (let ((quat (nvunit (quat (random 1.0) (random 1.0) (random 1.0) (random 1.0)))))
+      (is qequal quat (qfrom-mat (qmat4 quat))))))
