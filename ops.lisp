@@ -340,16 +340,23 @@
          0.0         0.0         0.0                 1.0)))
 
 (defun qfrom-mat (mat)
+  ;; From: https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
   (macrolet ((stub ()
-               `(let* ((absq2 (expt (mdet mat) (/ 1 3)))
-                       (w (* 0.5 (sqrt (max 0.0 (+ absq2 (+ (m 0 0)) (+ (m 1 1)) (+ (m 2 2)))))))
-                       (x (* 0.5 (sqrt (max 0.0 (+ 1.0 (+ (m 0 0)) (- (m 1 1)) (- (m 2 2)))))))
-                       (y (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (+ (m 1 1)) (- (m 2 2)))))))
-                       (z (* 0.5 (sqrt (max 0.0 (+ 1.0 (- (m 0 0)) (- (m 1 1)) (+ (m 2 2))))))))
-                  (quat (float-sign (- (m 2 1) (m 1 2)) x)
-                        (float-sign (- (m 0 2) (m 2 0)) y)
-                        (float-sign (- (m 1 0) (m 0 1)) z)
-                        w))))
+               `(let ((tt 0.0))
+                  (nq* (if (< (m 2 2) 0)
+                           (cond ((< (m 1 1) (m 0 0))
+                                  (setf tt (+ 1.0 (+ (m 0 0)) (- (m 1 1)) (- (m 2 2))))
+                                  (quat tt (+ (m 0 1) (m 1 0)) (+ (m 2 0) (m 0 2)) (- (m 1 2) (m 2 1))))
+                                 (T
+                                  (setf tt (+ 1.0 (- (m 0 0)) (+ (m 1 1)) (- (m 2 2))))
+                                  (quat (+ (m 0 1) (m 1 0)) tt (+ (m 1 2) (m 2 1)) (- (m 2 0) (m 0 2)))))
+                           (cond ((< (m 0 0) (- (m 1 1)))
+                                  (setf tt (+ 1.0 (- (m 0 0)) (- (m 1 1)) (+ (m 2 2))))
+                                  (quat (+ (m 2 0) (m 0 2)) (+ (m 1 2) (m 2 1)) tt (- (m 0 1) (m 1 0))))
+                                 (T
+                                  (setf tt (+ 1.0 (+ (m 0 0)) (+ (m 1 1)) (+ (m 2 2))))
+                                  (quat (- (m 1 2) (m 2 1)) (- (m 2 0) (m 0 2)) (- (m 0 1) (m 1 0)) tt))))
+                       (/ 0.5 (sqrt tt))))))
     (etypecase mat
       (mat3
        (with-fast-matref (m mat 3)
