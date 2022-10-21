@@ -22,6 +22,24 @@
               (qdual ,q) ,dual)
        ,q)))
 
+(defmacro qapply (&environment env quat op &optional x y z w)
+  (let ((q (gensym "QUAT")))
+    `(let ((,q ,quat))
+       (quat (,op (qx ,q) ,@(when x (list (ensure-float-param x env))))
+             (,op (qy ,q) ,@(when y (list (ensure-float-param y env))))
+             (,op (qz ,q) ,@(when z (list (ensure-float-param z env))))
+             (,op (qw ,q) ,@(when w (list (ensure-float-param w env))))))))
+
+(defmacro qapplyf (&environment env quat op &optional x y z w)
+  (let ((q (gensym "QUAT")))
+    `(let ((,q ,quat))
+       (qsetf ,q
+              (,op (qx ,q) ,@(when x (list (ensure-float-param x env))))
+              (,op (qy ,q) ,@(when y (list (ensure-float-param y env))))
+              (,op (qz ,q) ,@(when z (list (ensure-float-param z env))))
+              (,op (qw ,q) ,@(when w (list (ensure-float-param w env)))))
+       ,q)))
+
 (define-ofun q<- (target source)
   (setf (%vx3 target) (%vx3 source))
   (setf (%vy3 target) (%vy3 source))
@@ -129,10 +147,10 @@
              (loop for v in vals
                    do (,2quat-name val v)
                    finally (return val))
-             (vapplyf val ,op)))
+             (qapplyf val ,op)))
        (define-compiler-macro ,name (val &rest vals)
          (case (length vals)
-           (0 `(vapplyf ,val ,',op))
+           (0 `(qapplyf ,val ,',op))
            (1 `(,',2quat-name ,val ,(first vals)))
            (T `(,',name (,',2quat-name ,val ,(first vals)) ,@(rest vals))))))))
 
@@ -149,10 +167,10 @@
          (cond ((cdr vals)
                 (apply #',nname (,2quat-name val (first vals)) (rest vals)))
                (vals (,2quat-name val (first vals)))
-               (T (vapply val ,op))))
+               (T (qapply val ,op))))
        (define-compiler-macro ,name (val &rest vals)
          (case (length vals)
-           (0 `(vapply ,val ,',op))
+           (0 `(qapply ,val ,',op))
            (1 `(,',2quat-name ,val ,(first vals)))
            (T `(,',nname (,',2quat-name ,val ,(first vals)) ,@(rest vals))))))))
 
