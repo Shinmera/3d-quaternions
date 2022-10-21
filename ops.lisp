@@ -180,10 +180,10 @@
              (case (car red)
                ((qsetf quat)
                 `(,@red
-                  (+ (- (+ (* (qx b) (qw a)) (* (qy b) (qz a))) (* (qz b) (qy a))) (* (qw b) (qx a)))
-                  (+ (* (- (qx b)) (qz a)) (* (qy b) (qw a)) (* (qz b) (qx a)) (* (qw b) (qy a)))
-                  (+ (- (* (qx b) (qy a)) (* (qy b) (qx a))) (* (qz b) (qw a)) (* (qw b) (qz a)))
-                  (+ (- (* (- (qx b)) (qx a)) (* (qy b) (qy a)) (* (qz b) (qz a))) (* (qw b) (qw a)))))
+                  (+ (+ (* (qx a) (qw b))) (+ (* (qy a) (qz b))) (- (* (qz a) (qy b))) (+ (* (qw a) (qx b))))
+                  (+ (- (* (qx a) (qz b))) (+ (* (qy a) (qw b))) (+ (* (qz a) (qx b))) (+ (* (qw a) (qy b))))
+                  (+ (+ (* (qx a) (qy b))) (- (* (qy a) (qx b))) (+ (* (qz a) (qw b))) (+ (* (qw a) (qz b))))
+                  (+ (- (* (qx a) (qx b))) (- (* (qy a) (qy b))) (- (* (qz a) (qz b))) (+ (* (qw a) (qw b))))))
                (dquat
                 `(let ((,a (qunit ,a))
                        (,b (qunit ,b)))

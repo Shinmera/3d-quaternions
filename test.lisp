@@ -50,12 +50,27 @@
 (define-test arithmetic
   :parent 3d-quaternions
   :depends-on (misc)
-  (is q= (quat -1 0 0 1) (q* (quat 1 0 0 1) (quat 0 0 0 1)))
-  (is q= (quat -1 0 0 1) (q* (quat 0 0 0 1) (quat 1 0 0 1)))
-  (is q= (quat -3 3 3 -3) (q* (quat 0 1 2 1) (quat 1 2 0 1)))
-  (is q= (quat -3 2 1 2) (q* (quat 0 1 2 1) (quat 1 0 1 1)))
-  (is q= (quat -16.5 4 0.5 13) (q* (quat 1 2 3 4) (quat 1.5 0 2 3))))
+  (is q= (quat 1 0 0 1) (q* (quat 1 0 0 1) (quat 0 0 0 1)))
+  (is q= (quat 1 0 0 1) (q* (quat 0 0 0 1) (quat 1 0 0 1)))
+  (is q= (quat 2 0 0 0) (q* (quat 1 0 0 1) (quat 1 0 0 1)))
+  (is q= (quat 2 5 1 0) (q* (quat 1 2 3 1) (quat 1 0 0 1)))
+  (is q= (quat 3 7 4 1) (q* (quat 1 2 3 1) (quat 1 0 0 2)))
+  (is q= (quat -2 3 4 -1) (q* (quat 1 2 3 1) (quat 0 1 0 1)))
+  (is q= (quat 3 1 4 -2) (q* (quat 1 2 3 1) (quat 0 0 1 1)))
+  (is q= (quat 2 4 6 -13) (q* (quat 1 2 3 1) (quat 1 2 3 1))))
 
 (define-test math
   :parent 3d-quaternions
   :depends-on (arithmetic))
+
+(define-test randomized
+    :parent 3d-quaternions
+  :depends-on (misc)
+  (dotimes (i 100)
+    (let ((axis (nvunit (vrand (vec 0 0 0) 10)))
+          (angle (random (* 2 PI))))
+      (is qequal (qfrom-angle axis angle) (qfrom-mat (mrotation axis angle)))))
+  (dotimes (i 100)
+    (let ((axis (nvunit (vrand (vec 0 0 0) 10)))
+          (angle (random (* 2 PI))))
+      (is m~= (qmat4 (qfrom-angle axis angle)) (mrotation axis angle)))))
