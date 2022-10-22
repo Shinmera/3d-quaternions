@@ -332,7 +332,7 @@
   (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
          (tx (* 2.0 x)) (ty (* 2.0 y)) (tz (* 2.0 z))
          (twx (* tx w)) (twy (* ty w)) (twz (* tz w))
-         (txx (* tx x)) (txy (* tx x)) (txz (* tz x))
+         (txx (* tx x)) (txy (* tx y)) (txz (* tz x))
          (tyy (* ty y)) (tyz (* tz y)) (tzz (* tz z)))
     (mat (- 1.0 (+ tyy tzz)) (- txy twz) (+ txz twy) 0.0
          (+ txy twz) (- 1.0 (+ txx tzz)) (- tyz twx) 0.0
@@ -345,17 +345,21 @@
                `(let ((tt 0.0))
                   (nq* (if (< (m 2 2) 0)
                            (cond ((< (m 1 1) (m 0 0))
-                                  (setf tt (+ 1.0 (+ (m 0 0)) (- (m 1 1)) (- (m 2 2))))
-                                  (quat tt (+ (m 0 1) (m 1 0)) (+ (m 2 0) (m 0 2)) (- (m 1 2) (m 2 1))))
+                                  (princ "x!")
+                                  (setf tt (+ 1.0 (m 0 0) (- (m 1 1)) (- (m 2 2))))
+                                  (quat tt (+ (m 0 1) (m 1 0)) (+ (m 2 0) (m 0 2)) (- (m 2 1) (m 1 2))))
                                  (T
-                                  (setf tt (+ 1.0 (- (m 0 0)) (+ (m 1 1)) (- (m 2 2))))
-                                  (quat (+ (m 0 1) (m 1 0)) tt (+ (m 1 2) (m 2 1)) (- (m 2 0) (m 0 2)))))
+                                  (princ "y!")
+                                  (setf tt (+ 1.0 (- (m 0 0)) (m 1 1) (- (m 2 2))))
+                                  (quat (+ (m 0 1) (m 1 0)) tt (+ (m 1 2) (m 2 1)) (- (m 0 2) (m 2 0)))))
                            (cond ((< (m 0 0) (- (m 1 1)))
+                                  (princ "z!")
                                   (setf tt (+ 1.0 (- (m 0 0)) (- (m 1 1)) (+ (m 2 2))))
-                                  (quat (+ (m 2 0) (m 0 2)) (+ (m 1 2) (m 2 1)) tt (- (m 0 1) (m 1 0))))
+                                  (quat (+ (m 2 0) (m 0 2)) (+ (m 1 2) (m 2 1)) tt (- (m 1 0) (m 0 1))))
                                  (T
+                                  (princ "w!")
                                   (setf tt (+ 1.0 (+ (m 0 0)) (+ (m 1 1)) (+ (m 2 2))))
-                                  (quat (- (m 1 2) (m 2 1)) (- (m 2 0) (m 0 2)) (- (m 0 1) (m 1 0)) tt))))
+                                  (quat (- (m 2 1) (m 1 2)) (- (m 0 2) (m 2 0)) (- (m 1 0) (m 0 1)) tt))))
                        (/ 0.5 (sqrt tt))))))
     (etypecase mat
       (mat3
