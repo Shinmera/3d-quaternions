@@ -341,10 +341,23 @@
 
 (defun qfrom-mat (mat)
   (macrolet ((stub ()
-               `(let* ((u (nvunit (vec (m 0 1) (m 1 1) (m 2 1))))
-                       (f (nvunit (vec (m 0 2) (m 1 2) (m 2 2))))
-                       (r (vc u f)))
-                  (qlookat f (vc f r)))))
+               `(let* ((tt 0.0)
+                       (s-squared (+ (* (m 0 0) (m 0 0)) (* (m 1 0) (m 1 0)) (* (m 2 0) (m 2 0))))
+                       (s (sqrt s-squared)))
+                  (nq* (if (< (m 2 2) 0)
+                           (cond ((< (m 1 1) (m 0 0))
+                                  (setf tt (+ s (m 0 0)  (- (m 1 1))  (- (m 2 2)) ))
+                                  (quat tt (+ (m 0 1) (m 1 0))  (+ (m 2 0) (m 0 2))  (- (m 2 1) (m 1 2)) ))
+                                 (T
+                                  (setf tt (+ s (- (m 0 0))  (m 1 1)  (- (m 2 2)) ))
+                                  (quat (+ (m 0 1) (m 1 0))  tt (+ (m 1 2) (m 2 1))  (- (m 0 2) (m 2 0)))))
+                           (cond ((< (m 0 0) (- (m 1 1)))
+                                  (setf tt (+ s (- (m 0 0))  (- (m 1 1))  (+ (m 2 2)) ))
+                                  (quat (+ (m 2 0) (m 0 2))  (+ (m 1 2) (m 2 1))  tt (- (m 1 0) (m 0 1)) ))
+                                 (T
+                                  (setf tt (+ s (+ (m 0 0))  (+ (m 1 1)) (+ (m 2 2)) ))
+                                  (quat (- (m 2 1) (m 1 2))  (- (m 0 2) (m 2 0))  (- (m 1 0) (m 0 1))  tt))))
+                       (/ 0.5 (sqrt (* s  tt )))))))
     (etypecase mat
       (mat3
        (with-fast-matref (m mat 3)
