@@ -53,10 +53,10 @@
   (is q= (quat 1 0 0 1) (q* (quat 1 0 0 1) (quat 0 0 0 1)))
   (is q= (quat 1 0 0 1) (q* (quat 0 0 0 1) (quat 1 0 0 1)))
   (is q= (quat 2 0 0 0) (q* (quat 1 0 0 1) (quat 1 0 0 1)))
-  (is q= (quat 2 5 1 0) (q* (quat 1 2 3 1) (quat 1 0 0 1)))
-  (is q= (quat 3 7 4 1) (q* (quat 1 2 3 1) (quat 1 0 0 2)))
-  (is q= (quat -2 3 4 -1) (q* (quat 1 2 3 1) (quat 0 1 0 1)))
-  (is q= (quat 3 1 4 -2) (q* (quat 1 2 3 1) (quat 0 0 1 1)))
+  (is q= (quat 2 -1 5 0) (q* (quat 1 2 3 1) (quat 1 0 0 1)))
+  (is q= (quat 3 1 8 1) (q* (quat 1 2 3 1) (quat 1 0 0 2)))
+  (is q= (quat 4 3 2 -1) (q* (quat 1 2 3 1) (quat 0 1 0 1)))
+  (is q= (quat -1 3 4 -2) (q* (quat 1 2 3 1) (quat 0 0 1 1)))
   (is q= (quat 2 4 6 -13) (q* (quat 1 2 3 1) (quat 1 2 3 1))))
 
 (define-test math
