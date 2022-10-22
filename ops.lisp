@@ -55,8 +55,8 @@
           (cos (* 0.5 angle)))))
 
 (define-ofun qtowards (from to)
-  (let ((from (vunit from))
-        (to (vunit to)))
+  (let ((from (vunit* from))
+        (to (vunit* to)))
     (cond ((v= from to)
            (quat))
           ((v= from (v* to -1.0))
@@ -309,8 +309,8 @@
       (nqunit (nq* (nqexpt (nq* (qinv from) to) x) from))))
 
 (define-ofun qlookat (dir up)
-  (let* ((f (vunit dir))
-         (u (vunit up))
+  (let* ((f (vunit* dir))
+         (u (vunit* up))
          (r (vc f u))
          (u (vc f r))
          (world->object (qtowards +vz+ f))
