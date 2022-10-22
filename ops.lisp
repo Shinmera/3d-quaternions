@@ -322,7 +322,7 @@
   (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
          (tx (* 2.0 x)) (ty (* 2.0 y)) (tz (* 2.0 z))
          (twx (* tx w)) (twy (* ty w)) (twz (* tz w))
-         (txx (* tx x)) (txy (* tx x)) (txz (* tz x))
+         (txx (* tx x)) (txy (* tx y)) (txz (* tz x))
          (tyy (* ty y)) (tyz (* tz y)) (tzz (* tz z)))
     (mat (- 1.0 (+ tyy tzz)) (- txy twz) (+ txz twy)
          (+ txy twz) (- 1.0 (+ txx tzz)) (- tyz twx)
@@ -332,7 +332,7 @@
   (let* ((x (qx quat)) (y (qy quat)) (z (qz quat)) (w (qw quat))
          (tx (* 2.0 x)) (ty (* 2.0 y)) (tz (* 2.0 z))
          (twx (* tx w)) (twy (* ty w)) (twz (* tz w))
-         (txx (* tx x)) (txy (* tx x)) (txz (* tz x))
+         (txx (* tx x)) (txy (* tx y)) (txz (* tz x))
          (tyy (* ty y)) (tyz (* tz y)) (tzz (* tz z)))
     (mat (- 1.0 (+ tyy tzz)) (- txy twz) (+ txz twy) 0.0
          (+ txy twz) (- 1.0 (+ txx tzz)) (- tyz twx) 0.0
