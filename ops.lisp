@@ -339,8 +339,6 @@
          (- txz twy) (+ tyz twx) (- 1.0 (+ txx tyy)) 0.0
          0.0         0.0         0.0                 1.0)))
 
-(defvar *index* 1)
-
 (defun qfrom-mat (mat)
   (macrolet ((stub ()
                `(let* ((tt 0.0)
@@ -359,7 +357,7 @@
                                  (T
                                   (setf tt (+ s (+ (m 0 0))  (+ (m 1 1)) (+ (m 2 2)) ))
                                   (quat (- (m 2 1) (m 1 2))  (- (m 0 2) (m 2 0))  (- (m 1 0) (m 0 1))  tt))))
-                       (/ 0.5 (* s (sqrt (/ tt s))))))))
+                       (/ 0.5 (sqrt (* s  tt )))))))
     (etypecase mat
       (mat3
        (with-fast-matref (m mat 3)
