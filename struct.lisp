@@ -18,6 +18,10 @@
 (define-vecx-accessor qy %vy3)
 (define-vecx-accessor qz %vz3)
 (define-vecx-accessor qw %qw)
+(define-vecx-accessor qi %vx3)
+(define-vecx-accessor qj %vy3)
+(define-vecx-accessor qk %vz3)
+(define-vecx-accessor qr %qw)
 
 (declaim (inline quat))
 (declaim (ftype (function (&optional real real real real) quat) quat))

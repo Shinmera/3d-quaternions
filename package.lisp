@@ -60,6 +60,10 @@
    #:qy
    #:qz
    #:qw
+   #:qi
+   #:qj
+   #:qk
+   #:qr
    #:dquat
    #:dqcopy
    #:dquat-p
