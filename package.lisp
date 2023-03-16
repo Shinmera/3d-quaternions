@@ -31,6 +31,7 @@
    #:nq*
    #:q/
    #:nq/
+   #:nq+*
    #:q.
    #:qlength2
    #:qlength

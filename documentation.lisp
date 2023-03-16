@@ -151,6 +151,15 @@ See NQ*")
   
   (function nq/
     "")
+
+  (function nq+*
+    "Returns the first quaternion after being modified by the addition of the scaled quaternion/vector.
+
+This is useful if you have a rotation that you want to add to an
+orientation with a specific delta time.
+
+See QUAT
+See NQ+")
   
   (function q.
     "Returns the dot product of the two quaternions.
