@@ -77,8 +77,16 @@
 (define-ofun qaxis (quat)
   (vunit quat))
 
+(define-ofun (setf qaxis) (value quat)
+  (v<- quat value)
+  value)
+
 (define-ofun qangle (quat)
   (* 2.0 (the single-float (acos (qw quat)))))
+
+(define-ofun (setf qangle) (value quat)
+  (setf (qw quat) (cos (/ (ensure-float value) 2.0)))
+  value)
 
 (defmacro %2quat-op (name a b combination qred dqred &optional 2q-override)
   (let ((qred (if (listp qred) qred (list qred)))
