@@ -310,19 +310,20 @@
     (qsetf target (* (qx a) div) (* (qy a) div) (* (qz a) div) (* (qw a) (- div)))))
 
 (declaim (inline q*v))
-(define-ofun q*v (q v)
+(define-ofun q*v (q v &optional (target (vec3)))
   (etypecase q
     (quat
      (let* ((qw2 (* (qw q) (qw q)))
             (2qw (* 2.0 (qw q)))
             (q.q (- qw2 (v. q q)))
-            (2q.v (* 2.0 (v. q v))))
-       (vec (+ (* (vx3 q) 2q.v) (* (vx3 v) q.q) (* (- (* (vy3 q) (vz3 v)) (* (vz3 q) (vy3 v))) 2qw))
-            (+ (* (vy3 q) 2q.v) (* (vy3 v) q.q) (* (- (* (vz3 q) (vx3 v)) (* (vx3 q) (vz3 v))) 2qw))
-            (+ (* (vz3 q) 2q.v) (* (vz3 v) q.q) (* (- (* (vx3 q) (vy3 v)) (* (vy3 q) (vx3 v))) 2qw)))))
+            (2q.v (* 2.0 (v. q v)))
+            (x (+ (* (vx3 q) 2q.v) (* (vx3 v) q.q) (* (- (* (vy3 q) (vz3 v)) (* (vz3 q) (vy3 v))) 2qw)))
+            (y (+ (* (vy3 q) 2q.v) (* (vy3 v) q.q) (* (- (* (vz3 q) (vx3 v)) (* (vx3 q) (vz3 v))) 2qw)))
+            (z (+ (* (vz3 q) 2q.v) (* (vz3 v) q.q) (* (- (* (vx3 q) (vy3 v)) (* (vy3 q) (vx3 v))) 2qw))))
+       (vsetf target x y z)))
     (dquat
      (let ((d (nq* (qconjugate (qreal q)) (qdual q) 2.0)))
-       (nv+ (q*v (qreal q) v) d)))))
+       (nv+ (q*v (qreal q) v target) d)))))
 
 (define-ofun qmix (from to x)
   (nq+ (q* from (- 1.0 (ensure-float x)))
