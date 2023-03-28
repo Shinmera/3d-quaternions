@@ -257,6 +257,19 @@
        (dquat (q* (qreal a) mag)
               (q* (qdual a) mag))))))
 
+(declaim (inline qunit*))
+(define-ofun qunit* (a)
+  (etypecase a
+    (quat
+     (let ((length (qlength a)))
+       (if (= 0.0 length) (qcopy a) (q/ a length))))
+    (dquat
+     (let ((length (qlength (qreal a))))
+       (if (= 0.0 length)
+           (dqcopy a)
+           (dquat (q* (qreal a) (/ length))
+                  (q* (qdual a) (/ length))))))))
+
 (declaim (inline nqunit))
 (define-ofun nqunit (a)
   (etypecase a
@@ -266,6 +279,19 @@
      (let ((mag (/ (qlength (qreal a)))))
        (nq* (qreal a) mag)
        (nq* (qdual a) mag)
+       a))))
+
+(declaim (inline nqunit*))
+(define-ofun nqunit* (a)
+  (etypecase a
+    (quat
+     (let ((length (qlength a)))
+       (if (= 0.0 length) a (nq/ a length))))
+    (dquat
+     (let ((length (qlength (qreal a))))
+       (when (/= 0.0 length)
+         (nq* (qreal a) (/ length))
+         (nq* (qdual a) (/ length)))
        a))))
 
 (declaim (inline qconjugate))

@@ -190,8 +190,23 @@ See QLENGTH2")
 If passed a dual-quaternion, the real and dual part are normalised by
 the length of the real part.
 
+Signals an error if the quaternion has a length of zero.
+
 See QUAT
-See NQUNIT")
+See NQUNIT
+See QUNIT*")
+
+  (function qunit
+    "Returns a normalised copy of the quaternion.
+
+If passed a dual-quaternion, the real and dual part are normalised by
+the length of the real part.
+
+Returns an unmodified copy if the quaternion has a length of zero.
+
+See QUAT
+See NQUNIT
+See QUNIT*")
   
   (function nqunit
     "Returns the quaternion after normalising it.
@@ -199,8 +214,23 @@ See NQUNIT")
 If passed a dual-quaternion, the real and dual part are normalised by
 the length of the real part.
 
+Signals an error if the quaternion has a length of zero.
+
 See QUAT
-See QUNIT")
+See QUNIT
+See NQUNIT*")
+
+  (function nqunit*
+    "Returns the quaternion after normalising it.
+
+If passed a dual-quaternion, the real and dual part are normalised by
+the length of the real part.
+
+Returns the unmodified object if the quaternion has a length of zero.
+
+See QUAT
+See QUNIT
+See NQUNIT*")
   
   (function qconjugate
     "Returns the conjugate of the quaternion.

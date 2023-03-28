@@ -36,7 +36,9 @@
    #:qlength2
    #:qlength
    #:qunit
+   #:qunit*
    #:nqunit
+   #:nqunit*
    #:qconjugate
    #:qinv
    #:q*v
