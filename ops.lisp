@@ -304,9 +304,10 @@
       (dquat
        (dquat (thunk (qreal a)) (thunk (qdual a)))))))
 
-(define-ofun qinv (a)
-  (let ((div (/ -1.0 (qlength2 a))))
-    (quat (* (qx a) div) (* (qy a) div) (* (qz a) div) (* (qw a) (- div)))))
+(define-ofun qinv (a &optional (target (quat)))
+  (let* ((len (qlength2 a))
+         (div (if (= 0.0 len) 1.0 (/ -1.0 len))))
+    (qsetf target (* (qx a) div) (* (qy a) div) (* (qz a) div) (* (qw a) (- div)))))
 
 (declaim (inline q*v))
 (define-ofun q*v (q v)
