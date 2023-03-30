@@ -82,7 +82,10 @@
   value)
 
 (define-ofun qangle (quat)
-  (* 2.0 (the single-float (acos (qw quat)))))
+  (let ((length (vlength quat)))
+    (if (= 0.0 length)
+        0.0
+        (* 2.0 (the single-float (atan length (qw quat)))))))
 
 (define-ofun (setf qangle) (value quat)
   (setf (qw quat) (cos (/ (ensure-float value) 2.0)))
