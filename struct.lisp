@@ -41,6 +41,7 @@
   (declare (ignore env))
   `(quat ,(qx q) ,(qy q) ,(qz q) ,(qw q)))
 
+(declaim (inline %dquat))
 (defstruct (dquat (:conc-name NIL)
                   (:constructor %dquat (qreal qdual))
                   (:copier dqcopy)

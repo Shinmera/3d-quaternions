@@ -115,8 +115,8 @@
 (defmacro define-quatcomp (name op &optional (bundle 'and))
   (let ((2quat-name (intern* '2quat "-" name)))
     `(progn
-       (declaim (ftype (function ((or quat real) (or quat real)) boolean) ,2quat-name))
-       (declaim (ftype (function ((or quat real) &rest (or quat real)) boolean) ,name))
+       (declaim (ftype (function ((or quat dquat real) (or quat dquat real)) boolean) ,2quat-name))
+       (declaim (ftype (function ((or quat dquat real) &rest (or quat dquat real)) boolean) ,name))
        (declaim (inline ,name ,2quat-name))
        (define-ofun ,2quat-name (a b)
          (%2quat-op ,2quat-name a b ,op ,bundle ,bundle))
@@ -149,8 +149,8 @@
   (let ((2quat-name (intern* '2quat "-" name)))
     `(progn
        (declaim (inline ,name ,2quat-name))
-       (declaim (ftype (function (quat &rest (or quat real)) quat) ,name))
-       (declaim (ftype (function (quat (or quat real)) quat) ,2quat-name))
+       (declaim (ftype (function ((or quat dquat) &rest (or quat dquat real)) (or quat dquat)) ,name))
+       (declaim (ftype (function ((or quat dquat) (or quat dquat real)) (or quat dquat)) ,2quat-name))
        (define-ofun ,2quat-name (a b)
          (%2quat-op ,2quat-name a b ,op (qsetf a) (dqsetf a) ,2q-override))
        (define-ofun ,name (val &rest vals)
@@ -170,8 +170,8 @@
     `(progn
        (define-nquatop ,nname ,op ,2q-override)
        (declaim (inline ,name ,2quat-name))
-       (declaim (ftype (function ((or quat real) &rest (or quat real)) quat) ,name))
-       (declaim (ftype (function ((or quat real) (or quat real)) quat) ,2quat-name))
+       (declaim (ftype (function ((or quat dquat real) &rest (or quat dquat real)) (or quat dquat)) ,name))
+       (declaim (ftype (function ((or quat dquat real) (or quat dquat real)) (or quat dquat)) ,2quat-name))
        (define-ofun ,2quat-name (a b)
          (%2quat-op ,2quat-name a b ,op quat dquat ,2q-override))
        (define-ofun ,name (val &rest vals)
