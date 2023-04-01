@@ -229,18 +229,18 @@
               (* (qy a) (qy b))
               (* (qz a) (qz b))
               (* (qw a) (qw b)))))
+    (declare (inline thunk))
     (etypecase a
       (quat
        (thunk a b))
       (dquat
        (thunk (qreal a) (qreal b))))))
 
-(declaim (inline qlength2))
-(declaim (ftype (function (quat) (#.*float-type* 0.0)) qlength2))
+(declaim (inline qlength qlength2))
+(declaim (ftype (function ((or quat dquat)) (#.*float-type* 0.0)) qlength qlength2))
 (define-ofun qlength2 (a)
   (q. a a))
 
-(declaim (inline qlength))
 (define-ofun qlength (a)
   (sqrt (qlength2 a)))
 
@@ -248,7 +248,7 @@
 (define-ofun qunit (a)
   (etypecase a
     (quat
-     (q/ a (qlength a)))
+     (q* a (/ (qlength a))))
     (dquat
      (let ((mag (/ (qlength (qreal a)))))
        (dquat (q* (qreal a) mag)
@@ -259,7 +259,7 @@
   (etypecase a
     (quat
      (let ((length (qlength a)))
-       (if (= 0.0 length) (qcopy a) (q/ a length))))
+       (if (= 0.0 length) (qcopy a) (q* a (/ length)))))
     (dquat
      (let ((length (qlength (qreal a))))
        (if (= 0.0 length)
@@ -271,7 +271,7 @@
 (define-ofun nqunit (a)
   (etypecase a
     (quat
-     (nq/ a (qlength a)))
+     (nq* a (/ (qlength a))))
     (dquat
      (let ((mag (/ (qlength (qreal a)))))
        (nq* (qreal a) mag)
@@ -283,7 +283,7 @@
   (etypecase a
     (quat
      (let ((length (qlength a)))
-       (if (= 0.0 length) a (nq/ a length))))
+       (if (= 0.0 length) a (nq* a (/ length)))))
     (dquat
      (let ((length (qlength (qreal a))))
        (when (/= 0.0 length)
