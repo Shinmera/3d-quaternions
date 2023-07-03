@@ -1,9 +1,3 @@
-#|
- This file is a part of 3d-quaternions
- (c) 2022 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (defpackage #:org.shirakumo.flare.quaternion
   (:use #:cl #:org.shirakumo.flare.vector #:org.shirakumo.flare.matrix)
   (:import-from #:org.shirakumo.flare.vector
